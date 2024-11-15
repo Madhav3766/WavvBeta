@@ -6,89 +6,97 @@ import GoogleSignIn
 struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var isSignedIn = false // Track sign-in status
     
     var body: some View {
-        VStack {
-            // Logo at the top
-            Image("logo_wavv")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 265, height: 138) // Adjust as needed
-                .padding(.top, 100)
-            
-            Spacer()// Spacer to push fields and buttons down
+        NavigationView {
+            VStack {
+                // Logo at the top
+                Image("logo_wavv")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 265, height: 138)
+                    .padding(.top, 100)
+                
+                Spacer()
 
-            // Scrollable Content
-            ScrollView {
-                VStack(spacing: 30) {
-                    // Email Input
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Email")
-                            .font(.custom("Lexend", size: 24))
-                            .fontWeight(.bold)
-                            .foregroundColor(Color.white)
-                        
-                        TextField("Enter email address", text: $email)
-                            .padding()
-                            .background(Color(red: 68/255, green: 68/255, blue: 68/255))
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .frame(width: 300) // Adjusted width
+                // Scrollable Content
+                ScrollView {
+                    VStack(spacing: 30) {
+                        // Email Input
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Email")
+                                .font(.custom("Lexend", size: 24))
+                                .fontWeight(.bold)
+                                .foregroundColor(Color.white)
+                            
+                            TextField("Enter email address", text: $email)
+                                .padding()
+                                .background(Color(red: 68/255, green: 68/255, blue: 68/255))
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                                .frame(width: 300)
+                        }
+
+                        // Password Input
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Password")
+                                .font(.custom("Lexend", size: 24))
+                                .fontWeight(.bold)
+                                .foregroundColor(Color.white)
+                            
+                            SecureField("Enter Password", text: $password)
+                                .padding()
+                                .background(Color(red: 68/255, green: 68/255, blue: 68/255))
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                                .frame(width: 300)
+                        }
                     }
-
-                    // Password Input
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Password")
-                            .font(.custom("Lexend", size: 24))
-                            .fontWeight(.bold)
-                            .foregroundColor(Color.white)
-                        
-                        SecureField("Enter Password", text: $password)
-                            .padding()
-                            .background(Color(red: 68/255, green: 68/255, blue: 68/255))
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .frame(width: 300) // Adjusted width
-                    }
-                }
-            }
-            
-            Spacer() // Spacer to push buttons down to the bottom
-
-            // Buttons at the bottom
-            VStack(spacing: 30) {
-                Button(action: {
-                    // Handle regular login action
-                    print("Regular sign-in clicked")
-                }) {
-                    Text("Let's get grooving")
-                        .font(.custom("Lexend", size: 24))
-                        .fontWeight(.bold)
-                        .foregroundColor(.black)
-                        .frame(width: 300, height: 50)
-                        .background(Color(white: 1, opacity: 0.8))
-                        .cornerRadius(25)
                 }
                 
-                Button(action: {
-                    handleGoogleSignIn()
-                }) {
-                    Text("Sign in with Google")
-                        .font(.custom("Lexend", size: 24))
-                        .fontWeight(.bold)
-                        .foregroundColor(.black)
-                        .frame(width: 300, height: 50)
-                        .background(Color(white: 1, opacity: 0.8))
-                        .cornerRadius(25)
+                Spacer()
+
+                // Buttons at the bottom
+                VStack(spacing: 30) {
+                    Button(action: {
+                        // Handle regular login action
+                        print("Regular sign-in clicked")
+                    }) {
+                        Text("Let's get grooving")
+                            .font(.custom("Lexend", size: 24))
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+                            .frame(width: 300, height: 50)
+                            .background(Color(white: 1, opacity: 0.8))
+                            .cornerRadius(25)
+                    }
+                    
+                    Button(action: {
+                        handleGoogleSignIn()
+                    }) {
+                        Text("Sign in with Google")
+                            .font(.custom("Lexend", size: 24))
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+                            .frame(width: 300, height: 50)
+                            .background(Color(white: 1, opacity: 0.8))
+                            .cornerRadius(25)
+                    }
+                }
+                .padding(.bottom, 40)
+                
+                // NavigationLink to DancingBeatsView
+                NavigationLink(destination: DancingBeatsView(), isActive: $isSignedIn) {
+                    EmptyView()
                 }
             }
-            .padding(.bottom, 40)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(hex: "1E1E1E"))
+            .edgesIgnoringSafeArea(.all)
+            .navigationTitle("Login")
+            .navigationBarHidden(true)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(hex: "1E1E1E"))
-        .edgesIgnoringSafeArea(.all)
-        .navigationTitle("Login")
-        .navigationBarHidden(true)
     }
 
     // Google Sign-In Handler
@@ -135,7 +143,7 @@ struct LoginView: View {
 
                 // Handle successful login
                 print("Success: User signed in with Firebase")
-                // Navigate to another view or update the UI here
+                isSignedIn = true // Set to true to trigger navigation
             }
         }
     }
