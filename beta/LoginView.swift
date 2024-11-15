@@ -1,70 +1,143 @@
-⁠import SwiftUI
+import SwiftUI
+import FirebaseCore
+import FirebaseAuth
+import GoogleSignIn
 
 struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Text("Email")
-                    .font(.custom("Lexend", size: 64))
-                    .fontWeight(.bold)
-                    .foregroundColor(Color(red: 247/255, green: 241/255, blue: 241/255))
-                    .accessibilityAddTraits(.isHeader)
-                
-                TextField("Enter email address", text: $email)
-                    .font(.custom("Lexend", size: 48))
-                    .fontWeight(.thin)
-                    .padding()
-                    .frame(maxWidth: 862)
-                    .background(Color(red: 68/255, green: 68/255, blue: 68/255))
-                    .foregroundColor(Color(red: 247/255, green: 241/255, blue: 241/255))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 0)
-                            .stroke(Color(red: 245/255, green: 245/255, blue: 245/255), lineWidth: 1)
-                    )
-                    .accessibilityLabel("Email input")
-                
-                Text("Password")
-                    .font(.custom("Lexend", size: 64))
-                    .fontWeight(.bold)
-                    .foregroundColor(Color(red: 247/255, green: 241/255, blue: 241/255))
-                    .accessibilityAddTraits(.isHeader)
-                
-                SecureField("Enter Password", text: $password)
-                    .font(.custom("Lexend", size: 48))
-                    .fontWeight(.thin)
-                    .padding()
-                    .frame(maxWidth: 862)
-                    .background(Color(red: 68/255, green: 68/255, blue: 68/255))
-                    .foregroundColor(Color(red: 247/255, green: 241/255, blue: 241/255))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 0)
-                            .stroke(Color(red: 245/255, green: 245/255, blue: 245/255), lineWidth: 1)
-                    )
-                    .accessibilityLabel("Password input")
-                
+        VStack {
+            // Logo at the top
+            Image("logo_wavv")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 265, height: 138) // Adjust as needed
+                .padding(.top, 100)
+            
+            Spacer()// Spacer to push fields and buttons down
+
+            // Scrollable Content
+            ScrollView {
+                VStack(spacing: 30) {
+                    // Email Input
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Email")
+                            .font(.custom("Lexend", size: 24))
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.white)
+                        
+                        TextField("Enter email address", text: $email)
+                            .padding()
+                            .background(Color(red: 68/255, green: 68/255, blue: 68/255))
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                            .frame(width: 300) // Adjusted width
+                    }
+
+                    // Password Input
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Password")
+                            .font(.custom("Lexend", size: 24))
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.white)
+                        
+                        SecureField("Enter Password", text: $password)
+                            .padding()
+                            .background(Color(red: 68/255, green: 68/255, blue: 68/255))
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                            .frame(width: 300) // Adjusted width
+                    }
+                }
+            }
+            
+            Spacer() // Spacer to push buttons down to the bottom
+
+            // Buttons at the bottom
+            VStack(spacing: 30) {
                 Button(action: {
-                    // Handle login action
+                    // Handle regular login action
+                    print("Regular sign-in clicked")
                 }) {
                     Text("Let's get grooving")
-                        .font(.custom("Lexend", size: 64))
+                        .font(.custom("Lexend", size: 24))
                         .fontWeight(.bold)
                         .foregroundColor(.black)
-                        .frame(maxWidth: 795, maxHeight: 194)
+                        .frame(width: 300, height: 50)
                         .background(Color(white: 1, opacity: 0.8))
-                        .clipShape(RoundedRectangle(cornerRadius: 200))
+                        .cornerRadius(25)
                 }
-                .accessibilityLabel("Login button")
+                
+                Button(action: {
+                    handleGoogleSignIn()
+                }) {
+                    Text("Sign in with Google")
+                        .font(.custom("Lexend", size: 24))
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                        .frame(width: 300, height: 50)
+                        .background(Color(white: 1, opacity: 0.8))
+                        .cornerRadius(25)
+                }
             }
-            .padding(.vertical, 303)
-            .padding(.horizontal, 80)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(red: 30/255, green: 30/255, blue: 30/255))
+            .padding(.bottom, 40)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(hex: "1E1E1E"))
+        .edgesIgnoringSafeArea(.all)
         .navigationTitle("Login")
         .navigationBarHidden(true)
+    }
+
+    // Google Sign-In Handler
+    func handleGoogleSignIn() {
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            print("Error: Firebase Client ID not found")
+            return
+        }
+
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        // Get the root view controller dynamically
+        guard let rootViewController = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first?.windows.first?.rootViewController else {
+            print("Error: Root view controller not found")
+            return
+        }
+
+        // Start the Google Sign-In flow
+        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { result, error in
+            if let error = error {
+                print("Google Sign-In Error: \(error.localizedDescription)")
+                return
+            }
+
+            guard let user = result?.user,
+                  let idToken = user.idToken?.tokenString else {
+                print("Error: Google Sign-In did not return a valid user or token")
+                return
+            }
+
+            // Create Firebase Authentication credential
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                           accessToken: user.accessToken.tokenString)
+
+            // Sign in to Firebase
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
+                    print("Firebase Sign-In Error: \(error.localizedDescription)")
+                    return
+                }
+
+                // Handle successful login
+                print("Success: User signed in with Firebase")
+                // Navigate to another view or update the UI here
+            }
+        }
     }
 }
 
@@ -72,4 +145,18 @@ struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView()
     }
-} ⁠
+}
+
+extension Color {
+    init(hex: String) {
+        let scanner = Scanner(string: hex)
+        scanner.currentIndex = hex.startIndex
+        var rgbValue: UInt64 = 0
+        scanner.scanHexInt64(&rgbValue)
+        let red = Double((rgbValue >> 16) & 0xff) / 255
+        let green = Double((rgbValue >> 8) & 0xff) / 255
+        let blue = Double(rgbValue & 0xff) / 255
+        self.init(red: red, green: green, blue: blue)
+    }
+}
+

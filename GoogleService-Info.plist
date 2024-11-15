@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDoL1ZkcuiFE2SdEb7Q8xjcwEG539ysWKI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>931600337174</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.wavv.beta</string>
+	<key>PROJECT_ID</key>
+	<string>wavv-beta-ebe1c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>wavv-beta-ebe1c.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:931600337174:ios:4459cd209726758810a837</string>
+</dict>
+</plist>
