@@ -67,7 +67,7 @@ struct DancefloorSearchView: View {
                     .padding(.bottom, geometry.size.height * 0.03)
                     
                     // Next Button
-                    NextButton()
+                    NextButton1()
                         .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.08)
                         .padding(.bottom, geometry.size.height * 0.05)
                         .padding(.horizontal, geometry.size.width * 0.2)
@@ -161,7 +161,7 @@ struct ClubView: View {
     }
 }
 
-struct NextButton: View {
+struct NextButton1: View {
     var body: some View {
         Button(action: {
             // Handle next action
